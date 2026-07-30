@@ -407,8 +407,9 @@ If UniPose is helpful for you, please help star the GitHub Repo. Thanks!
                         input_image, instance_prompt, keypoint_example, box_threshold, IoU_threshold], outputs=[gallery])
 
 
+    port = int(os.environ.get("PORT", 8502))
     try:
-        block.launch(server_name="0.0.0.0", share=True)
+        block.launch(server_name="0.0.0.0", server_port=port, share=True)
     except Exception:
-        block.launch(server_name="0.0.0.0", share=False)
+        block.launch(server_name="0.0.0.0", server_port=port, share=False)
 
