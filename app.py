@@ -376,7 +376,7 @@ download_checkpoint_if_missing(checkpoint_path)
 model = load_model(config_file, checkpoint_path, cpu_only=False)
 
 if __name__ == "__main__":
-MARKDOWN = \
+    MARKDOWN = \
 """
 ## UniPose: Detecting Any Keypoints
 
