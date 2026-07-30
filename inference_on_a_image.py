@@ -1,5 +1,11 @@
 import argparse
 import os
+
+# Configure cache directories to /backup/data/art-gen
+os.environ["HF_HOME"] = os.environ.get("HF_HOME", "/backup/data/art-gen/huggingface")
+os.environ["TRANSFORMERS_CACHE"] = os.environ.get("TRANSFORMERS_CACHE", "/backup/data/art-gen/huggingface")
+os.environ["TORCH_HOME"] = os.environ.get("TORCH_HOME", "/backup/data/art-gen/torch")
+
 import sys
 import numpy as np
 import torch
@@ -226,7 +232,22 @@ def load_image(image_path):
     return image_pil, image
 
 
+def download_checkpoint_if_missing(checkpoint_path):
+    if not os.path.exists(checkpoint_path):
+        print(f"File checkpoint không tồn tại tại '{checkpoint_path}'. Đang tự động tải checkpoint UniPose Swin-T từ Google Drive...")
+        os.makedirs(os.path.dirname(os.path.abspath(checkpoint_path)), exist_ok=True)
+        try:
+            import gdown
+        except ImportError:
+            os.system("pip install gdown")
+            import gdown
+        file_id = "13gANvGWyWApMFTAtC3ntrMgx0fOocjIa"
+        url = f"https://drive.google.com/uc?id={file_id}"
+        gdown.download(url, checkpoint_path, quiet=False)
+
+
 def load_model(model_config_path, model_checkpoint_path, cpu_only=False):
+    download_checkpoint_if_missing(model_checkpoint_path)
     args = Config.fromfile(model_config_path)
     args.device = "cuda" if not cpu_only else "cpu"
     model = build_model(args)

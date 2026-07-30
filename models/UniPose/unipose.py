@@ -116,7 +116,8 @@ class UniPose(nn.Module):
 
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
-        model, _ = clip.load("ViT-B/32", device=device)
+        download_root = os.environ.get("CLIP_CACHE", "/backup/data/art-gen/clip")
+        model, _ = clip.load("ViT-B/32", device=device, download_root=download_root)
         self.clip_model = model
         visual_parameters = list(self.clip_model.visual.parameters())
         #

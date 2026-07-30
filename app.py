@@ -1,5 +1,11 @@
 import argparse
 import os
+
+# Configure cache directories to /backup/data/art-gen
+os.environ["HF_HOME"] = os.environ.get("HF_HOME", "/backup/data/art-gen/huggingface")
+os.environ["TRANSFORMERS_CACHE"] = os.environ.get("TRANSFORMERS_CACHE", "/backup/data/art-gen/huggingface")
+os.environ["TORCH_HOME"] = os.environ.get("TORCH_HOME", "/backup/data/art-gen/torch")
+
 os.system("pip install ftfy regex tqdm")
 os.system("pip install git+https://github.com/openai/CLIP.git")
 import sys
@@ -347,9 +353,25 @@ args = parser.parse_args()
 
 
 
+def download_checkpoint_if_missing(checkpoint_path):
+    if not os.path.exists(checkpoint_path):
+        print(f"File checkpoint không tồn tại tại '{checkpoint_path}'. Đang tự động tải checkpoint UniPose Swin-T từ Google Drive...")
+        os.makedirs(os.path.dirname(os.path.abspath(checkpoint_path)), exist_ok=True)
+        try:
+            import gdown
+        except ImportError:
+            os.system("pip install gdown")
+            import gdown
+        file_id = "13gANvGWyWApMFTAtC3ntrMgx0fOocjIa"
+        url = f"https://drive.google.com/uc?id={file_id}"
+        gdown.download(url, checkpoint_path, quiet=False)
+
 # cfg
 config_file = "config_model/UniPose_SwinT.py"  # change the path of the model config file
-checkpoint_path = "./unipose_swint.pth"  # change the path of the model
+default_ckpt = "/backup/data/art-gen/weights/unipose_swint.pth"
+checkpoint_path = default_ckpt if os.path.exists(default_ckpt) else "./unipose_swint.pth"  # change the path of the model
+download_checkpoint_if_missing(checkpoint_path)
+
 # load model
 model = load_model(config_file, checkpoint_path, cpu_only=False)
 
