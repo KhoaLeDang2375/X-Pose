@@ -407,5 +407,8 @@ If UniPose is helpful for you, please help star the GitHub Repo. Thanks!
                         input_image, instance_prompt, keypoint_example, box_threshold, IoU_threshold], outputs=[gallery])
 
 
-    block.launch(share=True)
+    try:
+        block.launch(server_name="0.0.0.0", share=True)
+    except Exception:
+        block.launch(server_name="0.0.0.0", share=False)
 
